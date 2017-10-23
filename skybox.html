@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Park</title>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+</head>
+<body>
+	<audio src="yun.mp3" autoplay loop></audio>
+    <script>
+        var scene=new THREE.Scene();
+
+        // Skybox
+
+        var path = "Park/";
+        var format = '.jpg';
+        var urls = [
+            path + 'posx' + format, path + 'negx' + format,
+            path + 'posy' + format, path + 'negy' + format,
+            path + 'posz' + format, path + 'negz' + format
+        ];
+
+        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+
+        var shader = THREE.ShaderLib[ "cube" ];
+        shader.uniforms[ "tCube" ].value = textureCube;
+
+        var material = new THREE.ShaderMaterial( {
+
+                    fragmentShader: shader.fragmentShader,
+                    vertexShader: shader.vertexShader,
+                    uniforms: shader.uniforms,
+                    depthWrite: false,
+                    side: THREE.BackSide
+
+                } ),
+
+                mesh = new THREE.Mesh( new THREE.BoxGeometry( 1000, 1000, 1000 ), material );
+        scene.add( mesh );
+
+
+        var light=new THREE.PointLight(0xffffff);
+        light.position.set(300,400,200);
+        scene.add(light);
+
+        scene.add(new THREE.AmbientLight(0x333333));
+
+        var camera=new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 10, 2000);
+        camera.position.set(200,200,200);
+        camera.lookAt(scene.position);
+
+        var renderer=new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+		var controls=new THREE.OrbitControls(camera);
+        function render() {
+            renderer.render(scene,camera);
+        }
+		controls.addEventListener('change', render);
+        render();
+
+       
+       
+
+        function animate() {
+            requestAnimationFrame(animate);
+            render();
+        }
+
+        animate();
+    </script>
+</body>
+</html>
